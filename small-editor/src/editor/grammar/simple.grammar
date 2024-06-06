@@ -1,0 +1,21 @@
+@top Program {expression*}
+
+expression {
+    Test | 
+    Increment
+}
+
+inner {
+    Internal
+}
+
+Test {"{" inner* "}"}
+Increment {"Increment"}
+Internal {"Internal"}
+
+@tokens {
+    space { $[ \t\n\r]+ }
+}
+
+@skip { space }
+
