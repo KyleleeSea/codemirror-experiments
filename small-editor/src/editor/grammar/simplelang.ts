@@ -7,8 +7,7 @@ export const simpleLang = LRLanguage.define({
     props: [
       styleTags({
         Increment: t.keyword,
-        Test: t.keyword,
-        Internal: t.string
+        Internal: t.string,
       }),
     ],
   }),
@@ -17,3 +16,4 @@ export const simpleLang = LRLanguage.define({
 export const simpleLangSupport = () => {
   return new LanguageSupport(simpleLang);
 };
+
