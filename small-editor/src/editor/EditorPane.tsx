@@ -1,8 +1,13 @@
 import CodeMirror from '@uiw/react-codemirror';
-import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
-import { languages } from '@codemirror/language-data';
 import React from 'react'
+import {simpleLangSupport} from './grammar/simplelang'
+import {autocompletion} from '@codemirror/autocomplete';
+import UseAutocomplete from './hooks/useAutocomplete'
 
 export default function EditorPane() {
-  return <CodeMirror extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]} />;
+  const completionFn = UseAutocomplete()
+  const extensionsList = [autocompletion({override: [completionFn]}),  
+  simpleLangSupport()]
+
+  return <CodeMirror extensions={extensionsList} />;
 }

@@ -1440,7 +1440,7 @@
     "@codemirror/language" "^6.0.0"
     "@codemirror/legacy-modes" "^6.4.0"
 
-"@codemirror/language@^6.0.0", "@codemirror/language@^6.3.0", "@codemirror/language@^6.4.0", "@codemirror/language@^6.6.0", "@codemirror/language@^6.8.0":
+"@codemirror/language@^6.0.0", "@codemirror/language@^6.10.2", "@codemirror/language@^6.3.0", "@codemirror/language@^6.4.0", "@codemirror/language@^6.6.0", "@codemirror/language@^6.8.0":
   version "6.10.2"
   resolved "https://registry.npmjs.org/@codemirror/language/-/language-6.10.2.tgz"
   integrity sha512-kgbTYTo0Au6dCSc/TFy7fK3fpJmgHDv1sG1KNQKJXVi+xBTEeBPY/M30YXiU6mMXeH+YIDLsbrT4ZwNRdtF+SA==
@@ -1477,7 +1477,7 @@
     "@codemirror/view" "^6.0.0"
     crelt "^1.0.5"
 
-"@codemirror/state@^6.0.0", "@codemirror/state@^6.1.1", "@codemirror/state@^6.4.0":
+"@codemirror/state@^6.0.0", "@codemirror/state@^6.1.1", "@codemirror/state@^6.2.1", "@codemirror/state@^6.4.0":
   version "6.4.1"
   resolved "https://registry.npmjs.org/@codemirror/state/-/state-6.4.1.tgz"
   integrity sha512-QkEyUiLhsJoZkbumGZlswmAhA7CBU02Wrz7zvH4SrcifbsqwlXShVXg65f3v/ts57W3dqyamEriMhij1Z3Zz4A==
@@ -1971,6 +1971,14 @@
   version "2.0.5"
   resolved "https://registry.npmjs.org/@leichtgewicht/ip-codec/-/ip-codec-2.0.5.tgz"
   integrity sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==
+
+"@lezer-unofficial/printer@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@lezer-unofficial/printer/-/printer-1.0.1.tgz"
+  integrity sha512-0bIixSdtdCyErXna3eKArYFsGfsUiXrgdu7t4gV8mL+2ooVDQArz66py1lSaEpfYI6n2nO11uNyHHvXojUWakw==
+  dependencies:
+    "@codemirror/state" "^6.2.1"
+    "@lezer/common" "^1.1.0"
 
 "@lezer/common@^1.0.0", "@lezer/common@^1.0.2", "@lezer/common@^1.1.0", "@lezer/common@^1.2.0", "@lezer/common@^1.2.1":
   version "1.2.1"
@@ -6982,6 +6990,25 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+lezer-generator@^0.13.4:
+  version "0.13.4"
+  resolved "https://registry.npmjs.org/lezer-generator/-/lezer-generator-0.13.4.tgz"
+  integrity sha512-pTWxEgw6U41jM/IwMbhPBPonrcQV5YYL3XoY4QPR7ibOjgo2RaF4wVrdabN1ILtBbGvtHZekTGyrbsqfKnMHMA==
+  dependencies:
+    lezer "^0.13.2"
+
+lezer-tree@^0.13.2:
+  version "0.13.2"
+  resolved "https://registry.npmjs.org/lezer-tree/-/lezer-tree-0.13.2.tgz"
+  integrity sha512-15ZxW8TxVNAOkHIo43Iouv4zbSkQQ5chQHBpwXcD2bBFz46RB4jYLEEww5l1V0xyIx9U2clSyyrLes+hAUFrGQ==
+
+lezer@^0.13.2:
+  version "0.13.5"
+  resolved "https://registry.npmjs.org/lezer/-/lezer-0.13.5.tgz"
+  integrity sha512-cAiMQZGUo2BD8mpcz7Nv1TlKzWP7YIdIRrX41CiP5bk5t4GHxskOxWUx2iAOuHlz8dO+ivbuXr0J1bfHsWD+lQ==
+  dependencies:
+    lezer-tree "^0.13.2"
 
 lilconfig@^2.0.3, lilconfig@^2.1.0:
   version "2.1.0"

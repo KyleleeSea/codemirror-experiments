@@ -14,8 +14,10 @@ const sourceBroken = `Test {
 
 const source = `Test {
     Internal
-
-}`
+    Internal
+    Increment
+    }
+`
 
 const tree = parser.parse(source)
 
