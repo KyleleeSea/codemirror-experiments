@@ -7,16 +7,22 @@ expression {
 
 inner {
     Identifier |
-    Internal
+    Internal |
+    ColorLiteral 
 }
 
 Test {"{" inner* "}"}
 Increment {@specialize <Identifier, "Increment">}
 Internal {@specialize <Identifier, "Internal">}
 
+  
 @tokens {
     Identifier { $[a-zA-Z_]+ }
     space { $[ \t\n\r]+ }
+    hexDigit { @digit | $[a-fA-F] }
+    ColorLiteral {
+        "#" hexDigit hexDigit hexDigit (hexDigit (hexDigit hexDigit (hexDigit hexDigit)?)?)?
+      }
 }
 
 @skip { space }
