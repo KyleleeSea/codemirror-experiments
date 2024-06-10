@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@lezer/generator": "^1.7.0",
+    "@lezer/lr": "^1.4.1"
+  },
+  "name": "codemirror-experiments",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:KyleleeSea/codemirror-experiments.git",
+  "author": "Kyle Lee <kylelee.sea@gmail.com>",
+  "license": "MIT"
+}
