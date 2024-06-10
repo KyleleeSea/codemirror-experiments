@@ -21,25 +21,17 @@ const UseAutocomplete = () => {
     return useCallback(async (context: CompletionContext) => {
         let nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1)
         let parent = nodeBefore.parent
-        // console.log(`Before: ${nodeBefore.name}`)
-        // console.log(nodeBefore)
         const tagOptions = customFiltering(context);
-        console.log(tagOptions)
 
         if (parent === null) {
-            console.log("null node")
             return null
         }
         
-        // console.log(`Parent: ${parent.name}`)
-
         if (parent.name !== "Test") {
             return null
         }
 
         let word = context.matchBefore(/\w*/);
-        // console.log(word)
-        // console.log(tree)
         if (word == null) {
             return null
         }
