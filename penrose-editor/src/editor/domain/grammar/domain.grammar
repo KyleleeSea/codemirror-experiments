@@ -1,0 +1,54 @@
+@top Program { declaration* }
+
+declaration {
+    Type |
+    Predicate |
+    SymPred |
+    Function |
+    Constructor |
+    Subtype
+}
+
+kw<term> { @specialize[@name={term}]<Identifier, term> }
+
+Type {
+    kw<"type"> (Identifier | Subtype)
+}
+
+Predicate {
+    kw<"predicate"> ParamList
+}
+
+SymPred {
+    kw<"symmetric"> Predicate
+}
+
+Function {
+    kw<"function"> Identifier ParamList "->" Identifier
+}
+
+Constructor {
+    kw<"constructor"> Identifier ParamList ("->" Identifier)?
+}
+
+Subtype {
+    Identifier "<:" Identifier
+}
+
+ParamList {
+    "(" commaSep<Identifier Identifier> ")"
+  }
+
+commaSep<content> {
+    (content ("," content)*)?
+  }
+
+@tokens {
+    Identifier { $[a-zA-Z0-9_]+ }
+    LineComment { "--" ![\n]* }
+    space { $[ \t\n\r]+ }
+  }
+
+@skip { space | LineComment }
+
+@detectDelim
