@@ -1,0 +1,28 @@
+@top Program {expression*}
+
+expression {
+    Test | 
+    Increment
+}
+
+inner {
+    Identifier |
+    Internal |
+    ColorLiteral 
+}
+
+Test {"{" inner* "}"}
+Increment {@specialize <Identifier, "Increment">}
+Internal {@specialize <Identifier, "Internal">}
+
+  
+@tokens {
+    Identifier { $[a-zA-Z_]+ }
+    space { $[ \t\n\r]+ }
+    hexDigit { @digit | $[a-fA-F] }
+    ColorLiteral {
+        "#" hexDigit hexDigit hexDigit (hexDigit (hexDigit hexDigit (hexDigit hexDigit)?)?)?
+      }
+}
+
+@skip { space }
