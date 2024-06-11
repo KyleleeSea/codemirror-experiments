@@ -16,7 +16,7 @@ Type {
 }
 
 Predicate {
-    kw<"predicate"> ParamList
+    kw<"predicate"> Identifier ParamList
 }
 
 SymPred {
@@ -32,16 +32,21 @@ Constructor {
 }
 
 Subtype {
-    Identifier "<:" Identifier
+    Identifier "<:" commaSep1<Identifier>
 }
 
 ParamList {
-    "(" commaSep<Identifier Identifier> ")"
+    "(" commaSep<Identifier (Identifier)?> ")"
   }
 
 commaSep<content> {
     (content ("," content)*)?
   }
+
+
+commaSep1<content> {
+    content ("," content)*
+}
 
 @tokens {
     Identifier { $[a-zA-Z0-9_]+ }
@@ -49,6 +54,16 @@ commaSep<content> {
     space { $[ \t\n\r]+ }
   }
 
-@skip { space | LineComment }
+@skip {} {
+BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+}
+
+@local tokens {
+blockCommentEnd { "*/" }
+blockCommentNewline { "\n" }
+@else blockCommentContent
+}
+
+@skip { space | LineComment | BlockComment }
 
 @detectDelim

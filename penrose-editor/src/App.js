@@ -1,4 +1,3 @@
-import './App.css';
 import EditorPane from './editor/EditorPane.tsx'
 
 function App() {
