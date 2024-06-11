@@ -32,6 +32,7 @@ describe("Common", () => {
     test("mixed", () => {
     // in the old test file, there was an intentional syntax error
     // to see how nearley.js responds (c after "Set")
+    // lezer responds by throwing an error node (add any character after Set in function output type)
         let input = `
 -- comments
 type Set -- inline comments
@@ -181,17 +182,26 @@ symmetric predicate Disjoint(Set, Set)`
             ParamList(Identifier,Identifier,Identifier,Identifier),Identifier))`
       testParser(input, expected)
     })
+
+    test("Subtype decls", () => {
+        let input = `
+Reals <: Set
+Interval <: Set
+Reals <: Interval
+OpenInterval <: Interval
+ClosedInterval <: Interval
+LeftClopenInterval <: Interval
+RightClopenInterval <: Interval`
+
+        let expected = `
+        Program(Subtype(Identifier,Identifier),
+        Subtype(Identifier,Identifier),
+        Subtype(Identifier,Identifier),
+        Subtype(Identifier,Identifier),
+        Subtype(Identifier,Identifier),
+        Subtype(Identifier,Identifier),
+        Subtype(Identifier,Identifier))`
+
+        testParser(input, expected)
+    })
 })
-
-// Empty Program
-// test("", "Program()")
-
-// let spec = `Script(FunctionDeclaration(
-//   function,
-//   Identifier,
-//   ParamList(Identifier),
-//   Block(
-//     ReturnStatement(
-//       return,
-//       BinaryExpression(Identifier, ArithOp, Number)))))`
-// testTree(tree, spec)

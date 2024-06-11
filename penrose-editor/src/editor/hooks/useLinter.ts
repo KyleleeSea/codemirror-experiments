@@ -6,7 +6,7 @@ import {linter, Diagnostic} from "@codemirror/lint"
 export const useLint = linter(view => {
   let diagnostics: Diagnostic[] = []
   syntaxTree(view.state).cursor().iterate(node => {
-    console.log(`${node.name}, From: ${node.from}, To: ${node.to}`)
+    // console.log(`${node.name}, From: ${node.from}, To: ${node.to}`)
     if (node.name === "Increment") diagnostics.push({
       from: node.from,
       to: node.to,
