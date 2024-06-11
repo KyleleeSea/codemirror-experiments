@@ -1,0 +1,66 @@
+@top Program { (statement semi)* }
+
+semi { ";" | insertSemi }
+
+statement {
+    TypeApp |
+    PredicateApp |
+    FunctionApp |
+    ConstructorApp |
+    Labeling
+}
+
+kw<term> { @specialize[@name={term}]<Identifier, term> }
+
+TypeApp {
+    Identifier commaSep1<Identifier>
+}
+
+PredicateApp {
+    Identifier "(" commaSep<Identifier> ")"
+}
+
+Function {
+    kw<"function"> Identifier ParamList "->" Identifier
+}
+
+Constructor {
+    kw<"constructor"> Identifier ParamList ("->" Identifier)?
+}
+
+Subtype {
+    !subtype Identifier "<:" commaSep1<Identifier>
+}
+
+commaSep<content> {
+    (content ("," content)*)?
+  }
+
+commaSep1<content> {
+    content ("," content)*
+}
+
+@tokens {
+    Identifier { $[a-zA-Z0-9_]+ }
+    LineComment[@export] { "--" ![\n]* }
+    spaces[@export] { $[\u0009 \u000b\u00a0]+ }
+    newline[@export] { $[\r\n] }
+    number {$[0-9]}
+    String { '"' (!["\\] | "\\" _)* '"' }
+}
+
+@skip {} {
+BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+}
+
+@local tokens {
+blockCommentEnd { "*/" }
+blockCommentNewline { "\n" }
+@else blockCommentContent
+}
+
+@skip { spaces | newline| LineComment | BlockComment }
+@external tokens insertSemicolon from "../tokens.js" { insertSemi }
+@context trackNewline from "../tokens.js"
+
+@detectDelim
