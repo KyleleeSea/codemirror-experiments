@@ -2,6 +2,8 @@
 
 semi { ";" | insertSemi }
 
+@precedence {type, subtype}
+
 declaration {
     Type |
     Predicate |
@@ -14,7 +16,7 @@ declaration {
 kw<term> { @specialize[@name={term}]<Identifier, term> }
 
 Type {
-    kw<"type"> (Identifier | Subtype)
+    !type kw<"type"> (Identifier | Subtype)
 }
 
 Predicate {
@@ -34,7 +36,7 @@ Constructor {
 }
 
 Subtype {
-    Identifier "<:" commaSep1<Identifier>
+    !subtype Identifier "<:" commaSep1<Identifier>
 }
 
 ParamList {
