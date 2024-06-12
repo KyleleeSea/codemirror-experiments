@@ -4,7 +4,7 @@ import {parser} from './substance.js'
 
 const testParser = createTestParser(parser)
 
-// Outputs obtained by printing and then inspecting program vs output
+// expected obtained by printing and then inspecting program vs output
 describe("Common", () => {
     test("empty", () => {
         let input = ''
@@ -106,5 +106,108 @@ describe("statements", () => {
         const expected = `Program(PredicateApp(Identifier,ArgList(Identifier,Identifier),IndexedStatement(for,Identifier,in,Number,Number,Identifier,in,Number,Number,where,BooleanExpression(BooleanExpression(BooleanExpression(NumericExpression(NumericExpression(Identifier),ArithOp,NumericExpression(Number)),CompareOp,NumericExpression(Identifier)),BoolOp,BooleanExpression(NumericExpression(NumericExpression(Identifier),ArithOp,NumericExpression(Number)),CompareOp,NumericExpression(Identifier))),BoolOp,BooleanExpression(BoolOp,BooleanExpression(BooleanExpression(BooleanExpression(NumericExpression(Identifier),CompareOp,NumericExpression(Number)),BoolOp,BooleanExpression(NumericExpression(Identifier),CompareOp,NumericExpression(Number)))))))))`
         testParser(input, expected)
     })
+
+    test("indexed predicate 2", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Edge(v_i, v_i) for i in [0, 20] where 20 != 20`
+        const expected = `Program(PredicateApp(Identifier,ArgList(Identifier,Identifier),
+            IndexedStatement(for,Identifier,in,Number,Number,where,
+            BooleanExpression(NumericExpression(Number),CompareOp,NumericExpression(Number)))))`
+        testParser(input, expected)
+    })
+
+    test("indexed labels 1", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Label x_i "abcde" for i in [0, 10]`
+        const expected = `Program(Labeling(Label,Identifier,String,
+            IndexedStatement(for,Identifier,in,Number,Number)))`
+        testParser(input, expected)
+    })
+
+    test("indexed labels 2", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Label y $abc$ for j in [0, 15]`
+        const expected = `Program(Labeling(Label,Identifier,TeX,
+            IndexedStatement(for,Identifier,in,Number,Number)))`
+        testParser(input, expected)
+    })
+
+    test("decl and decl list", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Set A
+        Map f, g, h`
+        const expected = `Program(TypeApp(Identifier,Identifier),
+        TypeApp(Identifier,Identifier,Identifier,Identifier))`
+        testParser(input, expected)
+    })
+    
+    test("label decl", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Set A, B, C
+        Label A $\\vec{A}$
+        Label B $B_1$`
+        const expected = `Program(TypeApp(Identifier,Identifier,Identifier,Identifier),
+        Labeling(Label,Identifier,TeX),
+        Labeling(Label,Identifier,TeX))`
+        testParser(input, expected)
+    })
+
+    test("no label decl", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Set A, B, C
+        NoLabel A
+        NoLabel B, C`
+        const expected = `Program(TypeApp(Identifier,Identifier,Identifier,Identifier),
+        Labeling(NoLabel,Identifier),
+        Labeling(NoLabel,Identifier,Identifier))`
+        testParser(input, expected)
+    })
+
+    test("auto label decl", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Set A, B, C
+        AutoLabel All
+        AutoLabel B, C
+        NoLabel B, C`
+        const expected = `Program(TypeApp(Identifier,Identifier,Identifier,Identifier),
+        Labeling(AutoLabel,All),
+        Labeling(AutoLabel,Identifier,Identifier),
+        Labeling(NoLabel,Identifier,Identifier))`
+        testParser(input, expected)
+    })
+
+    test("bind and exprs", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Set A, B, C
+        Point p1, p2
+        C := Intersection(A, B)`
+        const expected = `Program(TypeApp(Identifier,Identifier,Identifier,Identifier),
+        TypeApp(Identifier,Identifier,Identifier),
+        Fn_ConsApp(Identifier,Identifier,ArgList(Identifier,Identifier)))`
+        testParser(input, expected)
+    })
+
+    test("predicates", () => {
+        // Numbers aren't showing in the parse tree
+        const input = `Set A, B, C
+        Subset(A, B)`
+        const expected = `Program(TypeApp(Identifier,Identifier,Identifier,Identifier),
+        PredicateApp(Identifier,ArgList(Identifier,Identifier)))`
+        testParser(input, expected)
+    })
+
+    test("numbers and strings", () => {
+        // Numbers aren't showing in the parse tree
+        const input = ` Set A
+    Contains(A, 1)
+    Contains(B, "never gonna give you up")
+    Contains(C, 3.0)`
+        const expected = `Program(TypeApp(Identifier,Identifier),
+        PredicateApp(Identifier,ArgList(Identifier,Number)),
+        PredicateApp(Identifier,ArgList(Identifier,String)),
+        PredicateApp(Identifier,ArgList(Identifier,Float)))`
+        testParser(input, expected)
+    })
+
 
 });
