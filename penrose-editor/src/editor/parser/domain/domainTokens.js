@@ -12,7 +12,6 @@ export const trackNewline = new ContextTracker({
 
 export const insertSemicolon = new ExternalTokenizer((input, stack) => {
     let {next} = input
-    // console.log(stack.context)
     if (next === -1 || stack.context)
       input.acceptToken(insertSemi)
   }, {contextual: true, fallback: true})

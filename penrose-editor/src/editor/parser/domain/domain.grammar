@@ -2,8 +2,6 @@
 
 semi { ";" | insertSemi }
 
-@precedence {type, subtype}
-
 declaration {
     Type |
     Predicate |
@@ -16,7 +14,7 @@ declaration {
 kw<term> { @specialize[@name={term}]<Identifier, term> }
 
 Type {
-    !type kw<"type"> (Identifier | Subtype)
+    kw<"type"> (Identifier | Subtype)
 }
 
 Predicate {
@@ -36,7 +34,7 @@ Constructor {
 }
 
 Subtype {
-    !subtype Identifier "<:" commaSep1<Identifier>
+    Identifier "<:" commaSep1<Identifier>
 }
 
 ParamList {
@@ -70,7 +68,7 @@ blockCommentNewline { "\n" }
 }
 
 @skip { spaces | newline| LineComment | BlockComment }
-@external tokens insertSemicolon from "./tokens.js" { insertSemi }
-@context trackNewline from "./tokens.js"
+@external tokens insertSemicolon from "./domainTokens.js" { insertSemi }
+@context trackNewline from "./domainTokens.js"
 
 @detectDelim

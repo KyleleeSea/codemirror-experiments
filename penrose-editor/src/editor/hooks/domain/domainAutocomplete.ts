@@ -12,7 +12,7 @@ const DomainAutocomplete = () => {
         let word = context.matchBefore(/\w*/)
         let wholeTree = syntaxTree(context.state).topNode
 
-        console.log(nodeBefore.toString(), leftSib, word, wholeTree.toString())
+        // console.log(nodeBefore.toString(), leftSib, word, wholeTree.toString(), nodeBefore)
 
         // not sure what this does, stolen from autocomplete example 
         if (word == null || (word.from === word.to && !context.explicit)) {
