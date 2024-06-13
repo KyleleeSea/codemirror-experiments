@@ -38,7 +38,11 @@ IndexedStatement {
 }
 
 indexer {
-    (Identifier kw<"in"> "[" Number "," Number "]") ("," Identifier kw<"in"> "[" Number "," Number "]")*
+    (Identifier kw<"in"> Range) ("," Identifier kw<"in"> Range)*
+}
+
+Range {
+    "[" Number "," Number "]"
 }
 
 condition {
