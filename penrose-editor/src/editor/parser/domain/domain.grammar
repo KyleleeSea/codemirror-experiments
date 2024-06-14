@@ -1,4 +1,6 @@
-@top Program { declaration* }
+@top Program { (declaration semi)* }
+
+semi { ";" | insertSemi }
 
 declaration {
     Type |
@@ -50,9 +52,10 @@ commaSep1<content> {
 
 @tokens {
     Identifier { $[a-zA-Z0-9_]+ }
-    LineComment { "--" ![\n]* }
-    space { $[ \t\n\r]+ }
-  }
+    LineComment[@export] { "--" ![\n]* }
+    spaces[@export] { $[\u0009 \u000b\u00a0]+ }
+    newline[@export] { $[\r\n] }
+}
 
 @skip {} {
 BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
@@ -64,6 +67,8 @@ blockCommentNewline { "\n" }
 @else blockCommentContent
 }
 
-@skip { space | LineComment | BlockComment }
+@skip { spaces | newline| LineComment | BlockComment }
+@external tokens insertSemicolon from "./domainTokens.js" { insertSemi }
+@context trackNewline from "./domainTokens.js"
 
 @detectDelim

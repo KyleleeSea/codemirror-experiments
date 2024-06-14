@@ -1,5 +1,8 @@
-import {testParser} from "../utils.js"
+import {createTestParser} from "../utils.js"
 import { describe, test } from "vitest";
+import {parser} from './domain.js'
+
+const testParser = createTestParser(parser)
 
 describe("Common", () => {
     test("empty", () => {
