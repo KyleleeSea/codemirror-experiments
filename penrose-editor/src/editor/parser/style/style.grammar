@@ -1,0 +1,93 @@
+@top Input { Items }
+
+// macros
+
+commaSep<content> {
+  "" | content ("," content?)*
+}
+
+commaSep1<content> {
+  content ("," content)*
+}
+
+// grammar
+
+Items {
+  (Item)*
+}
+
+Item {
+  HeaderBlock { Header Block }
+  // | LayoutStages { "layout"  "="  StageList }
+}
+
+Header {
+  Selector
+  | Namespace
+  // | Collector
+}
+
+Selector {
+  ForAll Repeatable? DeclPatterns 
+}
+
+Namespace {
+  Identifier
+}
+
+DeclPatterns {
+  DeclPattern
+}
+
+DeclPattern {
+	SelType commaSep1<Variable>
+}
+
+SelType { Identifier }
+Variable {
+	StyVar { Identifier }
+	SubVar { "`" Identifier "`" }
+}
+
+
+Block {
+	"{" "}"
+}
+
+// StageList {
+//   "[" Stage ("," Stage)* "]"
+// }
+
+// Stage {
+//   /* Define the stage structure */
+// }
+
+@skip { spaces | newline | LineComment 
+	| BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+}
+
+// handle block comment content
+@local tokens {
+  blockCommentEnd { "*/" }
+  blockCommentNewline { "\n" }
+  @else blockCommentContent
+}
+
+@tokens {
+	ForAll { "forall" }
+	Repeatable { "repeatable" }
+}
+
+@tokens {
+	identifierChar { @asciiLetter | $[_$\u{a1}-\u{10ffff}] }
+  word { identifierChar (identifierChar | @digit)* }
+  Identifier { word }
+	LineComment { "--" ![\n]* }
+  spaces { $[ \t]+ }
+  newline { "\n" }
+  eof { @eof }
+}
+
+
+
+
