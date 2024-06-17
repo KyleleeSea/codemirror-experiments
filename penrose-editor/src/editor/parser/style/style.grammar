@@ -79,15 +79,15 @@ RelationList { sepBy1<Relation, ";"> }
 
 Relation { Bind | Pred | Field }
 
-Bind { Variable ":=" Expr }
+Bind { Variable ":=" RelExpr }
 
 Pred {Identifier "(" Args ")" As?}
 
 As { kw<"as"> Identifier }
 
-Expr { Func | Arg }
+RelExpr { Func | Arg }
 
-Func { Identifier "(" commaSep<Expr> ")" }
+Func { Identifier "(" commaSep<RelExpr> ")" }
 
 Arg { Variable | Literal }
 
@@ -98,10 +98,6 @@ Args { sepBy1<Arg, ","> }
 Field { Variable kw<"has"> FieldDesc? Identifier}
 
 FieldDesc { kw<"math"> | kw<"text"> }
-
-Block {
-	"{" "}"
-}
 
 // collector rules
 
@@ -118,7 +114,91 @@ Collector {
 
 Into { kw<"into"> Identifier }
 
+// block rules
+
+Block { "{" sepBy<Statement, semi> "}" }
+Statement { Delete | Override | Assign | AnonExpr }
+Delete { kw<"delete"> Path }
+Override { kw<"override"> Path "=" AssignExpr }
+Assign { Type? Path "=" AssignExpr }
+
+Path { Variable ("." Identifier)* AccessOps? }
+AccessOps { AccessOp (AccessOp)* }
+AccessOp { "[" Expr "]" }
+
+// expression rules
+AnonExpr { Layering | Objective | Constraint | ShapeDecl }
+AssignExpr { Expr | Layering | Objective | Constraint | ShapeDecl }
+
+Expr { 
+	BooleanLiteral |
+	ColorLiteral |
+	String |
+	AnnotatedFloat |
+	ComputationFunction |
+	StyVarExpr |
+	Path |
+	List |
+	Tuple |
+	Vector |
+	BinaryExpression { Expr BinOp Expr } 
+}
+
+AnnotatedFloat { "?" | Number } 
+ComputationFunction { Identifier "(" commaSep<Expr> ")" }
+StyVarExpr {
+	kw<"listof"> Identifier kw<"from"> Identifier |
+	(kw<"numberof"> | kw<"nameof">) Identifier
+}
+List { "[" commaSep<Expr> "]" }
+Tuple { "{" Expr "," Expr "}" }
+Vector { "(" commaSep1<Expr> ")" }
+Layering { 
+	kw<"layer">? Path (kw<"above"> | kw<"below">) commaSep1<Path> 
+}
+Objective {
+	kw<"encourage"> 
+}
+Constraint {
+	kw<"ensure"> Identifier "(" commaSep<Expr> ")"	
+}
+ObjConstrBody {
+	// function call
+	Identifier "(" commaSep<Expr> ")" |
+	// comparison expr
+	Expr CompareOp Expr 
+}
+ShapeDecl {
+	Identifier sepBy<PropertyDecl, semi>
+}
+PropertyDecl { Identifier ":" Expr }
+Type {
+	kw<"scalar"> |
+	kw<"int"> |
+	kw<"bool"> |
+	kw<"string"> |
+	kw<"path"> |
+	kw<"color"> |
+	kw<"file"> |
+	kw<"style"> |
+	kw<"shape"> | 
+	kw<"list"> |
+	kw<"vec2"> |
+	kw<"vec3"> |
+	kw<"vec4"> |
+	kw<"mat2x2"> |
+	kw<"mat3x3"> |
+	kw<"mat4x4"> |
+	kw<"function"> |
+	kw<"objective"> |
+	kw<"constraint"> 
+}
+
 // skips and tokens 
+
+@external tokens insertSemicolon from "./substanceTokens.js" { insertSemi }
+@context trackNewline from "./substanceTokens.js"
+semi { ";" | insertSemi }
 
 @skip { spaces | newline | LineComment 
 	| BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
@@ -130,6 +210,7 @@ Into { kw<"into"> Identifier }
   blockCommentNewline { "\n" }
   @else blockCommentContent
 }
+
 
 @tokens {
 	hex { @digit | $[a-fA-F] }
@@ -153,10 +234,16 @@ Into { kw<"into"> Identifier }
 	Escape {
 		"\\" ("x" hex hex | "u" ("{" hex+ "}" | hex hex hex hex) | ![xu])
 	}
+  ColorLiteral { "#" hex hex hex (hex (hex hex (hex hex)?)?)?  }
 	"."
 	"("[@name=LParen]
 	")"[@name=RParen]
 	":="[@name=Bind]
+	BooleanLiteral { "true" | "false" }
+	BinOp { $[+\-*/] | ".*" | "./" | "then" }
+	CompareOp { "<" | "==" | ">" }
+
+
 	@precedence { Number "." }
 }
 
