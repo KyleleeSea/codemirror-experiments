@@ -43,7 +43,7 @@ Stage {
 Header {
   Selector
   | Namespace
-  // | Collector
+  | Collector
 }
 
 // Selector rules
@@ -55,13 +55,9 @@ Selector {
 	)
 }
 
-Where {
-	kw<"where"> RelationList
-}
+Where { kw<"where"> RelationList }
 
-With {
-	kw<"with"> DeclList
-}
+With { kw<"with"> DeclList }
 
 Foreach { kw<"foreach"> DeclList }
 
@@ -70,6 +66,8 @@ Namespace { Identifier }
 DeclList { sepBy1<DeclPattern, ";"> }
 
 DeclPattern { SelType commaSep1<Variable> }
+
+Decl { SelType Variable }
 
 SelType { Identifier }
 Variable {
@@ -105,6 +103,20 @@ Block {
 	"{" "}"
 }
 
+// collector rules
+
+Collector {
+	kw<"collect"> kw<"repeatable">? Decl Into (
+		Where? With? Foreach? |
+		Where? Foreach? With? |
+		With? Where? Foreach? |
+		With? Foreach? Where? |
+		Foreach? Where? With? |
+		Foreach? With? Where?
+	)
+}
+
+Into { kw<"into"> Identifier }
 
 // skips and tokens 
 

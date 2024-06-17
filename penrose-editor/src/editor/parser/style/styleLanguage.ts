@@ -14,12 +14,14 @@ export const styleLanguage = LRLanguage.define({
         "SubVar/...": t.string,
         "StyVar/...": t.variableName,
         // keywords
+        collect: t.keyword,
         forall: t.keyword,
         with: t.keyword,
         where: t.keyword,
         repeatable: t.keyword,
         foreach: t.keyword,
         as: t.keyword,
+        into: t.keyword,
         StyVar: t.variableName,
         // constants
         Number: t.number,
