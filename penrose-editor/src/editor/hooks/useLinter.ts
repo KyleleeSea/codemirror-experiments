@@ -1,22 +1,33 @@
-import {syntaxTree} from "@codemirror/language"
-import {linter, Diagnostic} from "@codemirror/lint"
+import { syntaxTree } from "@codemirror/language";
+import { linter, Diagnostic } from "@codemirror/lint";
 // import {useCallback} from "react"
 
+export const useLint = linter((view) => {
+  const { state } = view;
+  const tree = syntaxTree(state);
+  if (tree.length === state.doc.length) {
+    let pos: number | null = null;
+    tree.iterate({
+      enter: (n) => {
+        if (pos == null && n.type.isError) {
+          console.log("error");
 
-export const useLint = linter(view => {
-  let diagnostics: Diagnostic[] = []
-  syntaxTree(view.state).cursor().iterate(node => {
-    // console.log(`${node.name}, From: ${node.from}, To: ${node.to}`)
-    if (node.name === "Increment") diagnostics.push({
-      from: node.from,
-      to: node.to,
-      severity: "warning",
-      message: "Increment is FORBIDDEN",
-      actions: [{
-        name: "Remove",
-        apply(view, from, to) { view.dispatch({changes: {from, to}}) }
-      }]
-    })
-  })
-  return diagnostics
-})
+          pos = n.from;
+          return false;
+        }
+      },
+    });
+
+    if (pos != null)
+      return [
+        {
+          from: pos,
+          to: pos + 1,
+          severity: "error",
+          message: "syntax error",
+        },
+      ];
+  }
+
+  return [];
+});
