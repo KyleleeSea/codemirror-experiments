@@ -1,7 +1,7 @@
 import { LRLanguage, LanguageSupport } from "@codemirror/language";
 import { styleTags, tags as t } from "@lezer/highlight";
 import { parser } from "./style.js";
-import { Variable } from "./style.terms.js";
+import { BooleanLiteral, ColorLiteral, Variable } from "./style.terms.js";
 
 export const styleLanguage = LRLanguage.define({
   parser: parser.configure({
@@ -13,6 +13,9 @@ export const styleLanguage = LRLanguage.define({
         "Namespace/...": t.namespace,
         "SubVar/...": t.string,
         "StyVar/...": t.variableName,
+        "ShapeName/...": t.className,
+        "PropName/...": t.propertyName,
+        "Type/...": t.typeName,
         // keywords
         collect: t.keyword,
         forall: t.keyword,
@@ -26,10 +29,14 @@ export const styleLanguage = LRLanguage.define({
         nameof: t.keyword,
         numberof: t.keyword,
         from: t.keyword,
+        // variables
+        ShapeName: t.className,
         StyVar: t.variableName,
         // constants
         Number: t.number,
         String: t.string,
+        ColorLiteral: t.color,
+        BooleanLiteral: t.bool,
         // delimiters
         LParen: t.paren,
         RParen: t.paren,

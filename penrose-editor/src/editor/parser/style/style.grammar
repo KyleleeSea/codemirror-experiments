@@ -116,11 +116,37 @@ Into { kw<"into"> Identifier }
 
 // block rules
 
-Block { "{" sepBy<Statement, semi> "}" }
+Block { "{" sepBy<Statement, ";"> "}" }
 Statement { Delete | Override | Assign | AnonExpr }
 Delete { kw<"delete"> Path }
 Override { kw<"override"> Path "=" AssignExpr }
-Assign { Type? Path "=" AssignExpr }
+Assign { 
+	Type? Path "=" AssignExpr 
+}
+Type {
+	@extend<Identifier,
+		("scalar" |
+		"int" |
+		"bool" |
+		"string" |
+		"path" |
+		"color" |
+		"file" |
+		"style" |
+		"shape" | 
+		"list" |
+		"vec2" |
+		"vec3" |
+		"vec4" |
+		"mat2x2" |
+		"mat3x3" |
+		"mat4x4" |
+		"function" |
+		"objective" |
+		"constraint" )
+	>
+}
+@precedence {Path, Type}
 
 Path { Variable ("." Identifier)* AccessOps? }
 AccessOps { AccessOp (AccessOp)* }
@@ -140,8 +166,8 @@ Expr {
 	Path |
 	List |
 	Tuple |
-	Vector |
-	BinaryExpression { Expr BinOp Expr } 
+	Vector
+	// BinaryExpression { Expr BinOp Expr } 
 }
 
 AnnotatedFloat { "?" | Number } 
@@ -157,10 +183,10 @@ Layering {
 	kw<"layer">? Path (kw<"above"> | kw<"below">) commaSep1<Path> 
 }
 Objective {
-	kw<"encourage"> 
+	kw<"encourage"> ObjConstrBody
 }
 Constraint {
-	kw<"ensure"> Identifier "(" commaSep<Expr> ")"	
+	kw<"ensure"> ObjConstrBody
 }
 ObjConstrBody {
 	// function call
@@ -169,39 +195,24 @@ ObjConstrBody {
 	Expr CompareOp Expr 
 }
 ShapeDecl {
-	Identifier sepBy<PropertyDecl, semi>
+	ShapeName "{" PropertyDecl* "}"
 }
-PropertyDecl { Identifier ":" Expr }
-Type {
-	kw<"scalar"> |
-	kw<"int"> |
-	kw<"bool"> |
-	kw<"string"> |
-	kw<"path"> |
-	kw<"color"> |
-	kw<"file"> |
-	kw<"style"> |
-	kw<"shape"> | 
-	kw<"list"> |
-	kw<"vec2"> |
-	kw<"vec3"> |
-	kw<"vec4"> |
-	kw<"mat2x2"> |
-	kw<"mat3x3"> |
-	kw<"mat4x4"> |
-	kw<"function"> |
-	kw<"objective"> |
-	kw<"constraint"> 
-}
+ShapeName { Identifier }
+PropertyDecl { PropName ":" Expr semi }
+PropName { Identifier }
 
 // skips and tokens 
 
-@external tokens insertSemicolon from "./substanceTokens.js" { insertSemi }
-@context trackNewline from "./substanceTokens.js"
+@external tokens insertSemicolon from "./styleTokens.js" { insertSemi }
+@context trackNewline from "./styleTokens.js"
 semi { ";" | insertSemi }
 
+@skip {} {
+	BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+}
+	
 @skip { spaces | newline | LineComment 
-	| BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+	| BlockComment 
 }
 
 // handle block comment content
@@ -217,10 +228,13 @@ semi { ";" | insertSemi }
 	stringContentDouble { ![\\\n"]+ }
 	identifierChar { @asciiLetter | $[_$\u{a1}-\u{10ffff}] }
   word { identifierChar (identifierChar | @digit)* }
+	newline[@export] { $[\r\n] }
+  spaces[@export] { $[ \t]+ }
+	BooleanLiteral { "true" | "false" }
   Identifier { word }
+
+	@precedence{ BooleanLiteral, Identifier }
 	LineComment { "--" ![\n]* }
-  spaces { $[ \t]+ }
-  newline { "\n" }
   eof { @eof }
 	Number {
 		(@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
@@ -239,7 +253,6 @@ semi { ";" | insertSemi }
 	"("[@name=LParen]
 	")"[@name=RParen]
 	":="[@name=Bind]
-	BooleanLiteral { "true" | "false" }
 	BinOp { $[+\-*/] | ".*" | "./" | "then" }
 	CompareOp { "<" | "==" | ">" }
 
