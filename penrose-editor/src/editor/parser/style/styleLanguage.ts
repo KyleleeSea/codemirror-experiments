@@ -4,6 +4,9 @@ import { parser } from "./style.js";
 import { BooleanLiteral, ColorLiteral, Variable } from "./style.terms.js";
 
 export const styleLanguage = LRLanguage.define({
+  languageData: {
+    commentTokens: { line: "--", block: { open: "/*", close: "*/" } },
+  },
   parser: parser.configure({
     props: [
       styleTags({
@@ -29,6 +32,11 @@ export const styleLanguage = LRLanguage.define({
         nameof: t.keyword,
         numberof: t.keyword,
         from: t.keyword,
+        ensure: t.keyword,
+        encourage: t.keyword,
+        layer: t.keyword,
+        above: t.keyword,
+        below: t.keyword,
         // variables
         ShapeName: t.className,
         StyVar: t.variableName,

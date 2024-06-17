@@ -9,9 +9,11 @@ import SubstanceAutocomplete from "./hooks/substance/substanceAutocomplete";
 import { color } from "@uiw/codemirror-extensions-color";
 import { styleLanguageSupport } from "./parser/style/styleLanguage";
 import StyleAutocomplete from "./hooks/style/styleAutocomplete";
+import { useLint } from "./hooks/useLinter";
 // import {useLint} from './hooks/useLinter'
 
 export default function EditorPane() {
+  const linter = useLint;
   const domainCompletionFn = DomainAutocomplete();
   const domainExtensions = [
     autocompletion({ override: [domainCompletionFn] }),
@@ -29,6 +31,7 @@ export default function EditorPane() {
   const styleExtensions = [
     autocompletion({ override: [styleAutocompleteFn] }),
     styleLanguageSupport(),
+    linter,
   ];
 
   return (

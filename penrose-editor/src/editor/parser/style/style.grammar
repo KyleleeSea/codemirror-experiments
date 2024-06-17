@@ -63,7 +63,7 @@ Foreach { kw<"foreach"> DeclList }
 
 Namespace { Identifier }
 
-DeclList { sepBy1<DeclPattern, ";"> }
+DeclList { sepBy1<DeclPattern, semi> }
 
 DeclPattern { SelType commaSep1<Variable> }
 
@@ -97,7 +97,7 @@ Args { sepBy1<Arg, ","> }
 
 Field { Variable kw<"has"> FieldDesc? Identifier}
 
-FieldDesc { kw<"math"> | kw<"text"> }
+FieldDesc { @extend<Identifier, "math"> | @extend<Identifier, "text"> }
 
 // collector rules
 
@@ -116,7 +116,7 @@ Into { kw<"into"> Identifier }
 
 // block rules
 
-Block { "{" sepBy<Statement, ";"> "}" }
+Block { "{" sepBy<Statement, semi> "}" }
 Statement { Delete | Override | Assign | AnonExpr }
 Delete { kw<"delete"> Path }
 Override { kw<"override"> Path "=" AssignExpr }
@@ -203,9 +203,6 @@ PropName { Identifier }
 
 // skips and tokens 
 
-@external tokens insertSemicolon from "./styleTokens.js" { insertSemi }
-@context trackNewline from "./styleTokens.js"
-semi { ";" | insertSemi }
 
 @skip {} {
 	BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
@@ -261,5 +258,10 @@ semi { ";" | insertSemi }
 }
 
 
+// https://lezer.codemirror.net/examples/javascript/
+// Because other tokens should take precedence over inserted semicolons (JavaScript only inserts semicolons when it can't otherwise proceed its parse), the declaration for this external tokenizer has to appear after the other tokenizers.
+@external tokens insertSemicolon from "./styleTokens.js" { insertSemi }
+@context trackNewline from "./styleTokens.js"
+semi { ";" | insertSemi }
 
 
