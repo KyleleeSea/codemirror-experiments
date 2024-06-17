@@ -2,13 +2,24 @@
 
 // macros
 
+sepBy<content, sep> {
+	"" | content (sep content?)*
+}
+
+// Similar to `sepEndBy1`
+sepBy1<content, sep> {
+  content (sep content?)*
+}
+
 commaSep<content> {
-  "" | content ("," content?)*
+  sepBy<content, ",">
 }
 
 commaSep1<content> {
-  content ("," content)*
+	sepBy1<content, ",">
 }
+
+kw<term> { @specialize[@name={term}]<Identifier, term> }
 
 // grammar
 
@@ -18,7 +29,15 @@ Items {
 
 Item {
   HeaderBlock { Header Block }
-  // | LayoutStages { "layout"  "="  StageList }
+  | LayoutStages { kw<"layout">  "="  StageList }
+}
+
+StageList {
+	"[" commaSep1<Stage> "]"
+}
+
+Stage {
+	Identifier
 }
 
 Header {
@@ -27,40 +46,67 @@ Header {
   // | Collector
 }
 
+// Selector rules
+
 Selector {
-  ForAll Repeatable? DeclPatterns 
+  kw<"forall"> kw<"repeatable">? DeclList (
+		Where? With?
+		| With? Where?
+	)
 }
 
-Namespace {
-  Identifier
+Where {
+	kw<"where"> RelationList
 }
 
-DeclPatterns {
-  DeclPattern
+With {
+	kw<"with"> DeclList
 }
 
-DeclPattern {
-	SelType commaSep1<Variable>
-}
+Foreach { kw<"foreach"> DeclList }
+
+Namespace { Identifier }
+
+DeclList { sepBy1<DeclPattern, ";"> }
+
+DeclPattern { SelType commaSep1<Variable> }
 
 SelType { Identifier }
 Variable {
 	StyVar { Identifier }
-	SubVar { "`" Identifier "`" }
+	| SubVar { "`" Identifier "`" }
 }
 
+RelationList { sepBy1<Relation, ";"> }
+
+Relation { Bind | Pred | Field }
+
+Bind { Variable ":=" Expr }
+
+Pred {Identifier "(" Args ")" As?}
+
+As { kw<"as"> Identifier }
+
+Expr { Func | Arg }
+
+Func { Identifier "(" commaSep<Expr> ")" }
+
+Arg { Variable | Literal }
+
+Literal { Number | String }
+
+Args { sepBy1<Arg, ","> }
+
+Field { Variable kw<"has"> FieldDesc? Identifier}
+
+FieldDesc { kw<"math"> | kw<"text"> }
 
 Block {
 	"{" "}"
 }
 
-// StageList {
-//   "[" Stage ("," Stage)* "]"
-// }
 
-// Stage {
-//   /* Define the stage structure */
-// }
+// skips and tokens 
 
 @skip { spaces | newline | LineComment 
 	| BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
@@ -74,11 +120,8 @@ Block {
 }
 
 @tokens {
-	ForAll { "forall" }
-	Repeatable { "repeatable" }
-}
-
-@tokens {
+	hex { @digit | $[a-fA-F] }
+	stringContentDouble { ![\\\n"]+ }
 	identifierChar { @asciiLetter | $[_$\u{a1}-\u{10ffff}] }
   word { identifierChar (identifierChar | @digit)* }
   Identifier { word }
@@ -86,6 +129,23 @@ Block {
   spaces { $[ \t]+ }
   newline { "\n" }
   eof { @eof }
+	Number {
+		(@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
+			(("e" | "E") ("+" | "-")? ("_" | @digit)+)?
+	}
+
+	String {
+		'"' (stringContentDouble | Escape)* ('"' | "\n") 
+		// "'" (stringContentSingle | Escape)* ("'" | "\n")
+	}
+	Escape {
+		"\\" ("x" hex hex | "u" ("{" hex+ "}" | hex hex hex hex) | ![xu])
+	}
+	"."
+	"("[@name=LParen]
+	")"[@name=RParen]
+	":="[@name=Bind]
+	@precedence { Number "." }
 }
 
 

@@ -8,6 +8,7 @@ import SubstanceAutocomplete from "./hooks/substance/substanceAutocomplete";
 
 import { color } from "@uiw/codemirror-extensions-color";
 import { styleLanguageSupport } from "./parser/style/styleLanguage";
+import StyleAutocomplete from "./hooks/style/styleAutocomplete";
 // import {useLint} from './hooks/useLinter'
 
 export default function EditorPane() {
@@ -24,7 +25,11 @@ export default function EditorPane() {
     substanceLanguageSupport(),
   ];
 
-  const styleExtensions = [styleLanguageSupport()];
+  const styleAutocompleteFn = StyleAutocomplete();
+  const styleExtensions = [
+    autocompletion({ override: [styleAutocompleteFn] }),
+    styleLanguageSupport(),
+  ];
 
   return (
     <div>
