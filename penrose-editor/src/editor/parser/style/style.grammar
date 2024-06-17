@@ -1,4 +1,5 @@
 @top Input { Items }
+@precedence {Path, Type, times @left, plus @left}
 
 // macros
 
@@ -146,7 +147,6 @@ Type {
 		"constraint" )
 	>
 }
-@precedence {Path, Type}
 
 Path { Variable ("." Identifier)* AccessOps? }
 AccessOps { AccessOp (AccessOp)* }
@@ -166,8 +166,13 @@ Expr {
 	Path |
 	List |
 	Tuple |
-	Vector
-	// BinaryExpression { Expr BinOp Expr } 
+	Vector | 
+	BinaryExpression
+}
+
+BinaryExpression {
+	Expr !times (BinOp<"*" | "/" | ".*" | "./"> | kw<"then">) Expr |
+	Expr !plus (BinOp<"+" | "-">) Expr
 }
 
 AnnotatedFloat { "?" | Number } 
@@ -200,6 +205,7 @@ ShapeDecl {
 ShapeName { Identifier }
 PropertyDecl { PropName ":" Expr semi }
 PropName { Identifier }
+BinOp<tkn> { tkn }
 
 // skips and tokens 
 
@@ -234,7 +240,8 @@ PropName { Identifier }
 	LineComment { "--" ![\n]* }
   eof { @eof }
 	Number {
-		(@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
+		// I added ("+" | "-")?
+		("+" | "-")? (@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
 			(("e" | "E") ("+" | "-")? ("_" | @digit)+)?
 	}
 
@@ -250,11 +257,12 @@ PropName { Identifier }
 	"("[@name=LParen]
 	")"[@name=RParen]
 	":="[@name=Bind]
-	BinOp { $[+\-*/] | ".*" | "./" | "then" }
+	// BinOp { $[+\-*/] | ".*" | "./" | "then" }
 	CompareOp { "<" | "==" | ">" }
 
 
 	@precedence { Number "." }
+	@precedence{LineComment, "-"}
 }
 
 
@@ -263,5 +271,3 @@ PropName { Identifier }
 @external tokens insertSemicolon from "./styleTokens.js" { insertSemi }
 @context trackNewline from "./styleTokens.js"
 semi { ";" | insertSemi }
-
-
