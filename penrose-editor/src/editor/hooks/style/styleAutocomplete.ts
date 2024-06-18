@@ -13,7 +13,7 @@ const StyleAutocomplete = () => {
     let wholeTree = syntaxTree(context.state).topNode;
 
     // console.log(nodeBefore.toString(), leftSib, word, wholeTree.toString(), nodeBefore)
-    console.log(printTree(wholeTree, context.state.doc.toString()));
+    // console.log(printTree(wholeTree, context.state.doc.toString()));
 
     // not sure what this does, stolen from autocomplete example
     if (word == null || (word.from === word.to && !context.explicit)) {

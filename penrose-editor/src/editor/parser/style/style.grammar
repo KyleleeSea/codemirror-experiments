@@ -1,5 +1,5 @@
 @top Input { Items }
-@precedence {Path, Type, times @left, plus @left}
+@precedence {Path, Type, call, prefix, postfix, times @left, plus @left, compare}
 
 // macros
 
@@ -117,7 +117,9 @@ Into { kw<"into"> Identifier }
 
 // block rules
 
-Block { "{" sepBy<Statement, semi> "}" }
+Block { "{" 
+("" | Statement (semi Statement)*)
+"}" }
 Statement { Delete | Override | Assign | AnonExpr }
 Delete { kw<"delete"> Path }
 Override { kw<"override"> Path "=" AssignExpr }
@@ -167,7 +169,16 @@ Expr {
 	List |
 	Tuple |
 	Vector | 
+	Parenthesized |
+	// UnaryExpression |
 	BinaryExpression
+}
+
+Parenthesized { "(" Expr ~vector ")" }
+
+UnaryExpression {
+	!prefix "-" Expr |
+	Expr !postfix "'"
 }
 
 BinaryExpression {
@@ -176,14 +187,14 @@ BinaryExpression {
 }
 
 AnnotatedFloat { "?" | Number } 
-ComputationFunction { Identifier "(" commaSep<Expr> ")" }
+ComputationFunction { Identifier !call "(" commaSep<Expr> ")" }
 StyVarExpr {
 	kw<"listof"> Identifier kw<"from"> Identifier |
 	(kw<"numberof"> | kw<"nameof">) Identifier
 }
 List { "[" commaSep<Expr> "]" }
 Tuple { "{" Expr "," Expr "}" }
-Vector { "(" commaSep1<Expr> ")" }
+Vector { "(" commaSep1<Expr> ~vector  ")" }
 Layering { 
 	kw<"layer">? Path (kw<"above"> | kw<"below">) commaSep1<Path> 
 }
@@ -195,9 +206,9 @@ Constraint {
 }
 ObjConstrBody {
 	// function call
-	Identifier "(" commaSep<Expr> ")" |
+	Identifier !call "(" commaSep<Expr> ")" |
 	// comparison expr
-	Expr CompareOp Expr 
+	Expr !compare CompareOp Expr 
 }
 ShapeDecl {
 	ShapeName "{" PropertyDecl* "}"
