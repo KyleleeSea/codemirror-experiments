@@ -209,10 +209,10 @@ ObjConstrBody {
 	Expr !compare CompareOp Expr 
 }
 ShapeDecl {
-	ShapeName "{" PropertyDecl* "}"
+	ShapeName "{" sepBy<PropertyDecl, semi> "}"
 }
 ShapeName { Identifier }
-PropertyDecl { PropName ":" Expr semi }
+PropertyDecl { PropName ":" Expr }
 PropName { Identifier }
 BinOp<tkn> { tkn }
 
