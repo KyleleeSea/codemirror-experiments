@@ -260,8 +260,7 @@ BinOp<tkn> { tkn }
 	LineComment { "--" ![\n]* }
   eof { @eof }
 	Number {
-		// I added ("+" | "-")?
-		("+" | "-")? (@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
+		(@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
 			(("e" | "E") ("+" | "-")? ("_" | @digit)+)?
 	}
 
@@ -282,7 +281,6 @@ BinOp<tkn> { tkn }
 
 
 	@precedence { Number "." }
-	@precedence {Number, "-"}
 	@precedence {LineComment, "-"}
 }
 
