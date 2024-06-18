@@ -256,8 +256,8 @@ BinOp<tkn> { tkn }
 	LineComment { "--" ![\n]* }
   eof { @eof }
 	Number {
-		(@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
-			(("e" | "E") ("+" | "-")? ("_" | @digit)+)?
+		(@digit+ ("." (@digit)*)? | "." @digit+)
+		(("e" | "E") ("+" | "-")? @digit+)?
 	}
 
 	String {
