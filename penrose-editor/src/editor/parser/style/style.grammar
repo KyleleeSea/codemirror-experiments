@@ -117,9 +117,7 @@ Into { kw<"into"> Identifier }
 
 // block rules
 
-Block { "{" 
-("" | Statement (semi Statement)*)
-"}" }
+Block { "{" sepBy<Statement, semi> "}" }
 Statement { Delete | Override | Assign | AnonExpr }
 Delete { kw<"delete"> Path }
 Override { kw<"override"> Path "=" AssignExpr }
