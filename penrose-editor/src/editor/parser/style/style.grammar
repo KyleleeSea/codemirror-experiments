@@ -41,6 +41,14 @@ Stage {
 	Identifier
 }
 
+// For some reason doing (kw<"in"> || kw<"except">) throws an error
+StageSpecifier {
+	kw<"in"> StageList |
+	kw<"in"> Stage |
+	kw<"except"> StageList |
+	kw<"except"> Stage
+}
+
 Header {
   Selector
   | Namespace
@@ -118,6 +126,7 @@ Into { kw<"into"> Identifier }
 // block rules
 
 Block { "{" sepBy<Statement, semi> "}" }
+
 Statement { Delete | Override | Assign | AnonExpr }
 Delete { kw<"delete"> Path }
 Override { kw<"override"> Path "=" AssignExpr }
@@ -128,7 +137,7 @@ Type {
 	@extend<Identifier,
 		("scalar" |
 		"int" |
-		"bool" |
+		"bool" |	
 		"string" |
 		"path" |
 		"color" |
@@ -168,7 +177,7 @@ Expr {
 	Tuple |
 	Vector | 
 	Parenthesized |
-	// UnaryExpression |
+	UnaryExpression |
 	BinaryExpression
 }
 
@@ -184,7 +193,8 @@ BinaryExpression {
 	Expr !plus (BinOp<"+" | "-">) Expr
 }
 
-AnnotatedFloat { "?" | Number } 
+// AnnotatedFloat { ("?" (StageSpecifier)? | Number) } 
+AnnotatedFloat { ("?" | Number) } 
 ComputationFunction { Identifier !call "(" commaSep<Expr> ")" }
 StyVarExpr {
 	kw<"listof"> Identifier kw<"from"> Identifier |
@@ -197,10 +207,10 @@ Layering {
 	kw<"layer">? Path (kw<"above"> | kw<"below">) commaSep1<Path> 
 }
 Objective {
-	kw<"encourage"> ObjConstrBody
+	kw<"encourage"> ObjConstrBody StageSpecifier?
 }
 Constraint {
-	kw<"ensure"> ObjConstrBody
+	kw<"ensure"> ObjConstrBody StageSpecifier?
 }
 ObjConstrBody {
 	// function call
@@ -249,8 +259,7 @@ BinOp<tkn> { tkn }
 	LineComment { "--" ![\n]* }
   eof { @eof }
 	Number {
-		// I added ("+" | "-")?
-		("+" | "-")? (@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
+		(@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
 			(("e" | "E") ("+" | "-")? ("_" | @digit)+)?
 	}
 
@@ -271,7 +280,7 @@ BinOp<tkn> { tkn }
 
 
 	@precedence { Number "." }
-	@precedence{LineComment, "-"}
+	@precedence {LineComment, "-"}
 }
 
 
